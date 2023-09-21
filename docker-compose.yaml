@@ -1,0 +1,88 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      target: metadata-image
+    ports:
+      - "8000:5065"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+
+  db:
+    image: 'postgres:12-alpine'
+    ports:
+      - 5500:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql
+      - ./migrations/scripts/create_metadata_db.sql:/docker-entrypoint-initdb.d/01.sql
+      - ./migrations/scripts/create_metadata_schema.sql:/docker-entrypoint-initdb.d/02.sql
+      - ./migrations/scripts/install_ltree.sql:/docker-entrypoint-initdb.d/03.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready --username $$POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    ports:
+      - "8750:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    logging:
+      driver: none
+    volumes:
+      - ./local_config/pgadmin/:/var/lib/pgadmin/
+    depends_on:
+      db:
+        condition: service_healthy
+
+  alembic:
+    build:
+      context: .
+      target: alembic-image
+    depends_on:
+      db:
+        condition: service_healthy
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+  kafka-ui:
+      image: provectuslabs/kafka-ui
+      container_name: kafka-ui
+      ports:
+        - '8080:8080'
+      restart: always
+      environment:
+        - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:29092
+        - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+      depends_on:
+        - broker

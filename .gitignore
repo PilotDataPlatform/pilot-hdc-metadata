@@ -1,0 +1,57 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+/tests/tests/logs
+# C extensions
+*.so
+.idea
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# pyinstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# virtualenv
+env
+.env
+venv
+.venv
+
+# vscode setting
+.vscode
+
+# log file
+/logs
+log.txt
+
+# test
+.coverage
+tests/logs/*
+
+# Mac files
+.DS_Store
+
+!.gitkeep

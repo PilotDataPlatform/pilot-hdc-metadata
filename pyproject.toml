@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "metadata"
+version = "2.2.1"
+description = "Create and update file metadata"
+authors = ["Indoc Research"]
+
+[tool.poetry.dependencies]
+fastapi = "0.77.1"
+fastapi-health = "0.4.0"
+fastapi-sqlalchemy = "0.2.1"
+fastapi-utils = "0.2.1"
+psycopg2-binary = "2.9.3"
+python = "^3.9"
+requests = "2.24.0"
+sqlalchemy-utils = "0.38.2"
+uvicorn = "0.17.5"
+python-json-logger = "2.0.2"
+fastavro = "1.6.0"
+kafka-python = "^2.0.2"
+pilot-platform-common = "^0.2.11"
+
+[tool.poetry.dev-dependencies]
+pytest = "6.2.4"
+pytest-httpx = "0.21.0"
+pytest-cov = "3.0.0"
+flake8 = "4.0.1"
+alembic = "^1.7.7"
+faker = "14.2.0"
+pytest-mock = "^3.10.0"
+testcontainers = "3.4.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
