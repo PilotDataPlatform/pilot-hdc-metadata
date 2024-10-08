@@ -1,17 +1,17 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 from uuid import UUID
 
-from common import LoggerFactory
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Query
 from fastapi_utils.cbv import cbv
 
-from app.config import ConfigClass
+from app.logger import logger
 from app.models.base_models import EAPIResponseCode
 from app.models.models_collections import DELETECollectionItems
 from app.models.models_collections import DELETECollectionItemsResponse
@@ -44,13 +44,6 @@ from .crud_collections import update_collection
 
 router = APIRouter()
 router_bulk = APIRouter()
-_logger = LoggerFactory(
-    name='api_collections',
-    level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-    level_file=ConfigClass.LOG_LEVEL_FILE,
-    level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-    level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-).get_logger()
 
 
 @cbv(router)
@@ -65,7 +58,7 @@ class APICollections:
         except BadRequestException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except Exception as e:
-            _logger.exception(f'Error when get_collections {str(e)}')
+            logger.exception(f'Error when get_collections {str(e)}')
             set_api_response_error(
                 api_response,
                 f'Failed to get collections:user {params.owner}; project {params.container_code}',
@@ -85,7 +78,7 @@ class APICollections:
         except EntityNotFoundException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception as e:
-            _logger.exception(f'Error when get_collection_items {str(e)}')
+            logger.exception(f'Error when get_collection_items {str(e)}')
             set_api_response_error(api_response, 'Failed to get items from collection', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
@@ -97,7 +90,7 @@ class APICollections:
         except EntityNotFoundException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception as e:
-            _logger.exception(f'Error when get_collections_id {str(e)}')
+            logger.exception(f'Error when get_collections_id {str(e)}')
             set_api_response_error(
                 api_response, f'Failed to get collections: {params.id}', EAPIResponseCode.internal_error
             )
@@ -113,7 +106,7 @@ class APICollections:
         except DuplicateRecordException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.conflict)
         except Exception as e:
-            _logger.exception(f'Error when create_new_collection {str(e)}')
+            logger.exception(f'Error when create_new_collection {str(e)}')
             set_api_response_error(
                 api_response, f'Failed to create collection with id {data.id}', EAPIResponseCode.internal_error
             )
@@ -131,7 +124,7 @@ class APICollections:
         except DuplicateRecordException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.conflict)
         except Exception as e:
-            _logger.exception(f'Error when update_collection_name {str(e)}')
+            logger.exception(f'Error when update_collection_name {str(e)}')
             set_api_response_error(api_response, 'Failed to update collection(s)', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
@@ -143,7 +136,7 @@ class APICollections:
         except EntityNotFoundException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception as e:
-            _logger.exception(f'Error when remove_collection {str(e)}')
+            logger.exception(f'Error when remove_collection {str(e)}')
             set_api_response_error(api_response, f'Failed to delete collection {id_}', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
@@ -155,7 +148,7 @@ class APICollections:
         except EntityNotFoundException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception as e:
-            _logger.exception(f'Error when add_items_to_collection {str(e)}')
+            logger.exception(f'Error when add_items_to_collection {str(e)}')
             set_api_response_error(
                 api_response, f'Failed to add items to collection {data.id}', EAPIResponseCode.internal_error
             )
@@ -169,7 +162,7 @@ class APICollections:
         except EntityNotFoundException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception as e:
-            _logger.exception(f'Error when remove_items_from_collection {str(e)}')
+            logger.exception(f'Error when remove_items_from_collection {str(e)}')
             set_api_response_error(
                 api_response, f'Failed to delete items from collection {data.id}', EAPIResponseCode.internal_error
             )

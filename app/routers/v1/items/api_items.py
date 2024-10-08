@@ -1,12 +1,12 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 from typing import List
 from uuid import UUID
 
-from common import LoggerFactory
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Query
@@ -15,7 +15,6 @@ from fastapi_utils.cbv import cbv
 
 from app.clients.kafka_client import KafkaProducerClient
 from app.clients.kafka_client import get_kafka_client
-from app.config import ConfigClass
 from app.models.base_models import EAPIResponseCode
 from app.models.models_items import DELETEItem
 from app.models.models_items import DELETEItemResponse
@@ -56,13 +55,6 @@ from .dependencies import jwt_required
 
 router = APIRouter()
 router_bulk = APIRouter()
-_logger = LoggerFactory(
-    name='api_items',
-    level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-    level_file=ConfigClass.LOG_LEVEL_FILE,
-    level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-    level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-).get_logger()
 
 
 @cbv(router)
@@ -73,9 +65,7 @@ class APIItems:
             api_response = GETItemResponse()
             api_response.result = combine_item_tables(get_item_by_id(params.id))
         except Exception:
-            set_api_response_error(
-                api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found, _logger
-            )
+            set_api_response_error(api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found)
         return api_response.json_response()
 
     @router.get('/', response_model=GETItemResponse, summary='Get zero or one item(s) by location')
@@ -84,7 +74,7 @@ class APIItems:
             api_response = GETItemResponse()
             api_response.result = get_item_by_location(params)
         except Exception:
-            set_api_response_error(api_response, 'Failed to get item', EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, 'Failed to get item', EAPIResponseCode.not_found)
         return api_response.json_response()
 
     @router.post('/', response_model=POSTItemResponse, summary='Create a new item')
@@ -95,11 +85,11 @@ class APIItems:
             api_response = POSTItemResponse()
             api_response.result = create_item(data, kafka_client)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except DuplicateRecordException:
-            set_api_response_error(api_response, 'Item conflict in database', EAPIResponseCode.conflict, _logger)
+            set_api_response_error(api_response, 'Item conflict in database', EAPIResponseCode.conflict)
         except Exception:
-            set_api_response_error(api_response, 'Failed to create item', EAPIResponseCode.internal_error, _logger)
+            set_api_response_error(api_response, 'Failed to create item', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router.put('/', response_model=PUTItemResponse, summary='Update an item')
@@ -113,13 +103,11 @@ class APIItems:
             api_response = PUTItemResponse()
             api_response.result = update_item(id_, data, kafka_client)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except EntityNotFoundException:
-            set_api_response_error(
-                api_response, f'Failed to get item with id {id_}', EAPIResponseCode.not_found, _logger
-            )
+            set_api_response_error(api_response, f'Failed to get item with id {id_}', EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(api_response, 'Failed to update item', EAPIResponseCode.internal_error, _logger)
+            set_api_response_error(api_response, 'Failed to update item', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router.patch('/', response_model=PATCHItemResponse, summary='Move an item to or out of the trash')
@@ -130,13 +118,11 @@ class APIItems:
             api_response = PATCHItemResponse()
             archive_item_by_id(params, kafka_client, api_response)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except EntityNotFoundException:
-            set_api_response_error(
-                api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found, _logger
-            )
+            set_api_response_error(api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(api_response, 'Failed to archive item', EAPIResponseCode.internal_error, _logger)
+            set_api_response_error(api_response, 'Failed to archive item', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router.delete('/', response_model=DELETEItemResponse, summary='Permanently delete an item')
@@ -147,11 +133,9 @@ class APIItems:
             api_response = DELETEItemResponse()
             delete_item_by_id(params.id, kafka_client, api_response)
         except EntityNotFoundException:
-            set_api_response_error(
-                api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found, _logger
-            )
+            set_api_response_error(api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(api_response, 'Failed to delete item', EAPIResponseCode.internal_error, _logger)
+            set_api_response_error(api_response, 'Failed to delete item', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
 
@@ -163,7 +147,7 @@ class APIItemsBulk:
             api_response = GETItemResponse()
             get_items_by_ids(params, ids, api_response)
         except Exception:
-            set_api_response_error(api_response, 'Failed to get item', EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, 'Failed to get item', EAPIResponseCode.not_found)
         return api_response.json_response()
 
     @router_bulk.get('/search/', response_model=GETItemResponse, summary='Get all items by location')
@@ -174,9 +158,9 @@ class APIItemsBulk:
             api_response = GETItemResponse()
             await get_items_by_location(params, api_response, current_identity)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except Exception:
-            set_api_response_error(api_response, 'Failed to get item', EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, 'Failed to get item', EAPIResponseCode.not_found)
         return api_response.json_response()
 
     @router_bulk.post('/batch/', response_model=POSTItemResponse, summary='Create many new items')
@@ -187,12 +171,12 @@ class APIItemsBulk:
             api_response = POSTItemResponse()
             create_items(data, kafka_client, api_response)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except DuplicateRecordException:
-            set_api_response_error(api_response, 'Item conflict in database', EAPIResponseCode.conflict, _logger)
+            set_api_response_error(api_response, 'Item conflict in database', EAPIResponseCode.conflict)
         except Exception as e:
             set_api_response_error(
-                api_response, 'Failed to create items: %s' % (str(e)), EAPIResponseCode.internal_error, _logger
+                api_response, 'Failed to create items: %s' % (str(e)), EAPIResponseCode.internal_error
             )
         return api_response.json_response()
 
@@ -209,10 +193,10 @@ class APIItemsBulk:
                 raise BadRequestException('Number of IDs does not match number of update data')
             update_items(ids, data, kafka_client, api_response)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except Exception as e:
             set_api_response_error(
-                api_response, 'Failed to update items: %s' % (str(e)), EAPIResponseCode.internal_error, _logger
+                api_response, 'Failed to update items: %s' % (str(e)), EAPIResponseCode.internal_error
             )
         return api_response.json_response()
 
@@ -224,7 +208,7 @@ class APIItemsBulk:
             api_response = DELETEItemResponse()
             delete_items_by_ids(ids, kafka_client, api_response)
         except Exception:
-            set_api_response_error(api_response, 'Failed to delete items', EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, 'Failed to delete items', EAPIResponseCode.not_found)
         return api_response.json_response()
 
     @router_bulk.put(
@@ -242,9 +226,7 @@ class APIItemsBulk:
             api_response = PUTItemsBequeathResponse()
             bequeath_to_children(id_, data, kafka_client, api_response)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except Exception:
-            set_api_response_error(
-                api_response, f'Failed to get item with id {id_}', EAPIResponseCode.not_found, _logger
-            )
+            set_api_response_error(api_response, f'Failed to get item with id {id_}', EAPIResponseCode.not_found)
         return api_response.json_response()

@@ -1,15 +1,15 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-import logging
 from datetime import datetime
 from datetime import timezone
 from functools import lru_cache
 from io import BytesIO
+from pathlib import Path
 
-from common import LoggerFactory
 from fastapi_sqlalchemy import db
 from fastavro import schema
 from fastavro import schemaless_writer
@@ -17,19 +17,11 @@ from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
 from app.config import ConfigClass
+from app.logger import logger
 from app.models.sql_attribute_templates import AttributeTemplateModel
-
-logger = logging.getLogger(__name__)
 
 
 class KafkaProducerClient:
-    _logger = LoggerFactory(
-        name='KafkaProducerClient',
-        level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-        level_file=ConfigClass.LOG_LEVEL_FILE,
-        level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-        level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-    ).get_logger()
     producer = None
     schema_path = 'app/schemas/metadata.items.avsc'
 
@@ -37,10 +29,10 @@ class KafkaProducerClient:
         self.schema = self._load_schema()
 
     def init_connection(self) -> None:
-        '''
+        """
         Summary:
             function for producer to inititate the kafka connection.
-        '''
+        """
         if not self.producer:
             try:
                 self.producer = KafkaProducer(bootstrap_servers=[ConfigClass.KAFKA_URL])
@@ -50,41 +42,42 @@ class KafkaProducerClient:
                 raise e
 
     def close_connection(self) -> None:
-        '''
+        """
         Summary:
             function for producer to close the kafka connection.
-        '''
+        """
         if self.producer is not None:
-            self._logger.info('Closing the kafka producer')
+            logger.info('Closing the kafka producer')
             self.producer.close()
 
     def _load_schema(self) -> dict:
-        '''
+        """
         Summary:
             function for loading metadata avro schema.
-        '''
+        """
         try:
-            loaded_schema = schema.load_schema(self.schema_path)
-            self._logger.info('Successfully loaded avro schema')
+            project_root = Path(__file__).parents[2]
+            loaded_schema = schema.load_schema(project_root / self.schema_path)
+            logger.info('Successfully loaded avro schema')
             return loaded_schema
         except Exception as e:
-            self._logger.exception('Error loading avro schema')
+            logger.exception('Error loading avro schema')
             raise e
 
     def _get_attribute_template(self, template_id) -> dict:
-        '''
+        """
         Summary:
                 function for querying attribute template by template id.
-        '''
+        """
         query = db.session.query(AttributeTemplateModel).filter_by(id=template_id)
         template = query.first().to_dict()
         return template
 
     def _format_item(self, item: dict) -> dict:
-        '''
+        """
         Summary:
             function for formatting item date and template name fields before serialization.
-        '''
+        """
         try:
             formatted = item.copy()
             formatted['created_time'] = datetime.strptime(formatted['created_time'], '%Y-%m-%d %H:%M:%S.%f').replace(
@@ -102,37 +95,37 @@ class KafkaProducerClient:
             return formatted
 
         except Exception as e:
-            self._logger.exception(f'Error for formatting item: {item["id"]}')
+            logger.exception(f'Error for formatting item: {item["id"]}')
             raise e
 
     def _serialize_msg(self, item: dict) -> bytes:
-        '''
+        """
         Summary:
             function for avro-serialization of item.
-        '''
+        """
         try:
             bio = BytesIO()
             message = self._format_item(item)
             schemaless_writer(bio, self.schema, message)
             serialized_message = bio.getvalue()
-            self._logger.info(f'Successfully serialized metadata item: {item["id"]}')
+            logger.info(f'Successfully serialized metadata item: {item["id"]}')
             return serialized_message
         except ValueError as ve:
-            self._logger.exception(f'Error of avro serialization for item: {item["id"]}')
+            logger.exception(f'Error of avro serialization for item: {item["id"]}')
             raise ve
 
     def send(self, item: dict) -> None:
-        '''
+        """
         Summary:
             function for sending message to kafka topic.
-        '''
+        """
         try:
             serialized_msg = self._serialize_msg(item)
             self.producer.send(ConfigClass.KAFKA_TOPIC, serialized_msg)
             self.producer.flush()
-            self._logger.info(f'Sent Kafka message to topic: {ConfigClass.KAFKA_TOPIC}')
+            logger.info(f'Sent Kafka message to topic: {ConfigClass.KAFKA_TOPIC}')
         except KafkaError as ke:
-            self._logger.exception('Error sending metadata event to Kafka')
+            logger.exception('Error sending metadata event to Kafka')
             raise ke
 
 

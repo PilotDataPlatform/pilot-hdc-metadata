@@ -1,4 +1,4 @@
-FROM python:3.9 AS production-environment
+FROM docker-registry.ebrains.eu/hdc-services-image/base-image:python-3.10.12-v2 AS production-environment
 
 ENV PYTHONDONTWRITEBYTECODE=true \
     PYTHONIOENCODING=UTF-8 \
@@ -9,12 +9,15 @@ ENV PYTHONDONTWRITEBYTECODE=true \
 ENV PATH="${POETRY_HOME}/bin:${PATH}"
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-WORKDIR /usr/src/app
 COPY poetry.lock pyproject.toml ./
 RUN poetry install --no-dev --no-root --no-interaction
 
 FROM production-environment AS metadata-image
 COPY app ./app
+
+RUN chown -R app:app /app
+USER app
+
 ENTRYPOINT ["python3", "-m", "app"]
 
 FROM production-environment AS development-environment
@@ -24,5 +27,9 @@ FROM development-environment AS alembic-image
 COPY app ./app
 COPY migrations ./migrations
 COPY alembic.ini ./
+
+RUN chown -R app:app /app
+USER app
+
 ENTRYPOINT ["python3", "-m", "alembic"]
 CMD ["upgrade", "head"]

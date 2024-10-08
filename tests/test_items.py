@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import uuid
@@ -825,7 +826,7 @@ class TestItems:
             'name': 'test_file_1.txt',
             'parent_path': 'user/test_folder',
             'container_code': test_items['container_code'],
-            'container_type': ContainerType.PROJECT,
+            'container_type': ContainerType.PROJECT.value,
             'zone': test_items['zone'],
             'status': ItemStatus.ACTIVE,
         }
@@ -840,7 +841,7 @@ class TestItems:
             'name': 'test_folder',
             'parent_path': 'user',
             'container_code': test_items['container_code'],
-            'container_type': ContainerType.PROJECT,
+            'container_type': ContainerType.PROJECT.value,
             'zone': test_items['zone'],
             'status': ItemStatus.ACTIVE,
         }
@@ -855,7 +856,7 @@ class TestItems:
             'name': 'not_exists',
             'parent_path': 'user/test_folder',
             'container_code': test_items['container_code'],
-            'container_type': ContainerType.PROJECT,
+            'container_type': ContainerType.PROJECT.value,
             'zone': test_items['zone'],
             'status': ItemStatus.ACTIVE,
         }

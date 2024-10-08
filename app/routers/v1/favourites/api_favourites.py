@@ -1,14 +1,13 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from common import LoggerFactory
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi_utils.cbv import cbv
 
-from app.config import ConfigClass
 from app.models.base_models import EAPIResponseCode
 from app.models.models_favourites import DELETEFavourite
 from app.models.models_favourites import DELETEFavouriteResponse
@@ -34,13 +33,6 @@ from app.routers.v1.favourites.crud_favourites import pin_unpin_favourite_by_use
 
 router = APIRouter()
 router_bulk = APIRouter()
-_logger = LoggerFactory(
-    name='api_favourites',
-    level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-    level_file=ConfigClass.LOG_LEVEL_FILE,
-    level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-    level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-).get_logger()
 
 
 @cbv(router)
@@ -51,15 +43,15 @@ class APIFavourites:
             api_response = POSTFavouriteResponse()
             api_response.result = create_favourite(data)
         except UnauthorizedException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.forbidden, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.forbidden)
         except BadRequestException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except EntityNotFoundException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except DuplicateRecordException:
-            set_api_response_error(api_response, 'Favourite conflict in database', EAPIResponseCode.conflict, _logger)
+            set_api_response_error(api_response, 'Favourite conflict in database', EAPIResponseCode.conflict)
         except Exception:
-            set_api_response_error(api_response, 'Failed to create favourite', EAPIResponseCode.internal_error, _logger)
+            set_api_response_error(api_response, 'Failed to create favourite', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router.patch('/', response_model=PATCHFavouriteResponse, summary='Pin or unpin an existing favourite')
@@ -68,11 +60,9 @@ class APIFavourites:
             api_response = PATCHFavouriteResponse()
             api_response.result = pin_unpin_favourite_by_user_and_entity_id(user, params.id, params.type, params.pinned)
         except EntityNotFoundException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(
-                api_response, 'Failed to pin or unpin favourite', EAPIResponseCode.internal_error, _logger
-            )
+            set_api_response_error(api_response, 'Failed to pin or unpin favourite', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router.delete('/', response_model=DELETEFavouriteResponse, summary='Remove an existing favourite')
@@ -81,9 +71,9 @@ class APIFavourites:
             api_response = DELETEFavouriteResponse()
             delete_favourite_by_user_and_entity_id(params.id, params.user, params.type, api_response)
         except EntityNotFoundException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(api_response, 'Failed to remove favourite', EAPIResponseCode.internal_error, _logger)
+            set_api_response_error(api_response, 'Failed to remove favourite', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
 
@@ -98,7 +88,7 @@ class APIFavouritesBulk:
             set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except Exception:
             set_api_response_error(
-                api_response, f'Failed to get favourites for user {params.user}', EAPIResponseCode.not_found, _logger
+                api_response, f'Failed to get favourites for user {params.user}', EAPIResponseCode.not_found
             )
         return api_response.json_response()
 
@@ -108,11 +98,9 @@ class APIFavouritesBulk:
             api_response = PATCHFavouriteResponse()
             bulk_pin_unpin_favourites(user, data, api_response)
         except EntityNotFoundException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(
-                api_response, 'Failed to pin or unpin favourite', EAPIResponseCode.internal_error, _logger
-            )
+            set_api_response_error(api_response, 'Failed to pin or unpin favourite', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router_bulk.delete('/', response_model=DELETEFavouriteResponse, summary='Remove many existing favourites')
@@ -121,9 +109,7 @@ class APIFavouritesBulk:
             api_response = DELETEFavouriteResponse()
             bulk_delete_favourites(user, data, api_response)
         except EntityNotFoundException as e:
-            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found, _logger)
+            set_api_response_error(api_response, str(e), EAPIResponseCode.not_found)
         except Exception:
-            set_api_response_error(
-                api_response, 'Failed to remove favourites', EAPIResponseCode.internal_error, _logger
-            )
+            set_api_response_error(api_response, 'Failed to remove favourites', EAPIResponseCode.internal_error)
         return api_response.json_response()

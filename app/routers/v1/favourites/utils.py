@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 from typing import Union
@@ -16,9 +17,11 @@ def create_favourite_response(favourite: FavouritesModel, entity: Union[ItemMode
         'id': str(favourite.item_id) if type(entity) is ItemModel else str(favourite.collection_id),
         'type': entity.type if type(entity) is ItemModel else 'collection',
         'name': entity.name,
-        'display_path': construct_display_path(entity.container_code, entity.zone, entity.parent_path)
-        if type(entity) is ItemModel
-        else entity.container_code,
+        'display_path': (
+            construct_display_path(entity.container_code, entity.zone, entity.parent_path)
+            if type(entity) is ItemModel
+            else entity.container_code
+        ),
         'pinned': favourite.pinned,
     }
 

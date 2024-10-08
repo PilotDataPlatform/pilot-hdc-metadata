@@ -1,13 +1,14 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 from typing import Callable
 
-from common import LoggerFactory
 from pydantic import BaseModel
 
+from app.logger import logger
 from app.models.base_models import APIResponse
 from app.models.base_models import EAPIResponseCode
 from app.models.sql_items import Base
@@ -32,11 +33,8 @@ def paginate(
     api_response.result = results
 
 
-def set_api_response_error(
-    api_response: APIResponse, message: str, code: EAPIResponseCode, _logger: LoggerFactory = None
-):
-    if _logger:
-        _logger.exception(message)
+def set_api_response_error(api_response: APIResponse, message: str, code: EAPIResponseCode):
+    logger.exception(message)
     api_response.set_error_msg(message)
     api_response.set_code(code)
     api_response.total = 0

@@ -1,17 +1,17 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 from uuid import UUID
 
-from common import LoggerFactory
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Query
 from fastapi_utils.cbv import cbv
 
-from app.config import ConfigClass
+from app.logger import logger
 from app.models.base_models import EAPIResponseCode
 from app.models.models_attribute_templates import DELETETemplate
 from app.models.models_attribute_templates import DELETETemplateResponse
@@ -32,13 +32,6 @@ from .crud import get_templates_by_project_code
 from .crud import update_template
 
 router = APIRouter()
-_logger = LoggerFactory(
-    name='api_attribute_templates',
-    level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-    level_file=ConfigClass.LOG_LEVEL_FILE,
-    level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-    level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-).get_logger()
 
 
 @cbv(router)
@@ -49,7 +42,7 @@ class APIAttributeTemplates:
             api_response = GETTemplateResponse()
             get_template_by_id(params, api_response)
         except Exception as e:
-            _logger.exception(f'Error when get_attribute_template {str(e)}')
+            logger.exception(f'Error when get_attribute_template {str(e)}')
             set_api_response_error(
                 api_response, f'Failed to get template with id {params.id}', EAPIResponseCode.not_found
             )
@@ -61,7 +54,7 @@ class APIAttributeTemplates:
             api_response = GETTemplateResponse()
             get_templates_by_project_code(params, api_response)
         except Exception as e:
-            _logger.exception(f'Error when get_attribute_templates {str(e)}')
+            logger.exception(f'Error when get_attribute_templates {str(e)}')
             set_api_response_error(
                 api_response, f'Failed to get templates with code {params.project_code}', EAPIResponseCode.not_found
             )
@@ -73,7 +66,7 @@ class APIAttributeTemplates:
             api_response = POSTTemplateResponse()
             create_template(data, api_response)
         except Exception as e:
-            _logger.exception(f'Error when create_attribute_template {str(e)}')
+            logger.exception(f'Error when create_attribute_template {str(e)}')
             set_api_response_error(api_response, 'Failed to create attribute template', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
@@ -85,7 +78,7 @@ class APIAttributeTemplates:
         except EntityNotFoundException:
             set_api_response_error(api_response, f'Failed to get template with id {id_}', EAPIResponseCode.not_found)
         except Exception as e:
-            _logger.exception(f'Error when update_attribute_template {str(e)}')
+            logger.exception(f'Error when update_attribute_template {str(e)}')
             set_api_response_error(api_response, 'Failed to update attribute template', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
@@ -99,6 +92,6 @@ class APIAttributeTemplates:
                 api_response, f'Failed to get template with id {params.id}', EAPIResponseCode.not_found
             )
         except Exception as e:
-            _logger.exception(f'Error when delete_attribute_template {str(e)}')
+            logger.exception(f'Error when delete_attribute_template {str(e)}')
             set_api_response_error(api_response, 'Failed to delete template', EAPIResponseCode.internal_error)
         return api_response.json_response()

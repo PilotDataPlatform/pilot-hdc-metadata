@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import uuid
@@ -226,7 +227,7 @@ class TestFavourites:
                 {'id': test_favourites['entity_ids'][1], 'type': 'collection'},
             ]
         }
-        response = app.delete('/v1/favourites/', params=params, json=payload)
+        response = app.request('DELETE', '/v1/favourites/', params=params, json=payload)
         assert response.status_code == 200
 
     def test_delete_favourites_bulk_not_found_404(self, app, test_favourites):
@@ -237,7 +238,7 @@ class TestFavourites:
                 {'id': str(uuid.uuid4()), 'type': 'collection'},
             ]
         }
-        response = app.delete('/v1/favourites/', params=params, json=payload)
+        response = app.request('DELETE', '/v1/favourites/', params=params, json=payload)
         assert response.status_code == 404
 
     def test_favourite_field_true_in_items_search_200(

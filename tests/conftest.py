@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import random
@@ -30,6 +31,8 @@ from app.models.models_items import ItemStatus
 from app.models.models_items import ItemType
 from app.models.models_lineage_provenance import TransformationType
 from tests.main import KafkaTestClient
+
+POSTGRES_DOCKER_IMAGE = 'postgres:14.2-alpine'
 
 
 def generate_random_container_code() -> str:
@@ -400,7 +403,7 @@ def has_contrib_file_permission(httpx_mock):
 
 @pytest.fixture(scope='session', autouse=True)
 def db():
-    with PostgresContainer('postgres:9.5') as postgres:
+    with PostgresContainer(POSTGRES_DOCKER_IMAGE) as postgres:
         postgres_uri = postgres.get_connection_url()
         if not database_exists(postgres_uri):
             create_database(postgres_uri)
@@ -495,3 +498,8 @@ def test_lineage(app) -> dict:
 
     items_in_lineage = [item_1_id, item_2_id]
     yield items_in_lineage
+
+
+@pytest.fixture
+def non_mocked_hosts() -> list[str]:
+    return ['testserver']

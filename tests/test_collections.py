@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import re
@@ -245,5 +246,5 @@ class TestCollections:
             'id': test_collections[0]['id'],
             'item_ids': [test_items['ids']['file_1'], test_items['ids']['file_2']],
         }
-        response = app.delete('/v1/collection/items/', json=params)
+        response = app.request('DELETE', '/v1/collection/items/', json=params)
         assert response.status_code == 200

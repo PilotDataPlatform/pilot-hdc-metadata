@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import time
@@ -102,9 +103,11 @@ def get_item_children(root_item: ItemModel, group_by_depth: bool = False) -> dic
             ItemModel.container_code == root_item.container_code,
             ItemModel.zone == root_item.zone,
             ItemModel.status == root_item.status,
-            ItemModel.restore_path.lquery(expression.cast(search_path, LQUERY))
-            if root_item.status == ItemStatus.ARCHIVED
-            else ItemModel.parent_path.lquery(expression.cast(search_path, LQUERY)),
+            (
+                ItemModel.restore_path.lquery(expression.cast(search_path, LQUERY))
+                if root_item.status == ItemStatus.ARCHIVED
+                else ItemModel.parent_path.lquery(expression.cast(search_path, LQUERY))
+            ),
         )
     )
     children = children_item_query.all()

@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import base64
@@ -46,6 +47,10 @@ class Settings(BaseSettings):
     PORT: int = 5065
     HOST: str = '0.0.0.0'
     ENV: str = 'test'
+
+    LOGGING_LEVEL: int = logging.INFO
+    LOGGING_FORMAT: str = 'json'
+
     KAFKA_URL: str = 'kafka:29099'
     KAFKA_TOPIC: str = 'metadata.items'
 
@@ -63,11 +68,6 @@ class Settings(BaseSettings):
     MAX_SYSTEM_TAGS = 10
     MAX_ATTRIBUTE_LENGTH = 100
     MAX_COLLECTIONS = 10
-
-    LOG_LEVEL_DEFAULT = logging.WARN
-    LOG_LEVEL_FILE = logging.WARN
-    LOG_LEVEL_STDOUT = logging.WARN
-    LOG_LEVEL_STDERR = logging.ERROR
 
     GREENROOM_ZONE_VALUE: int = 0
     CORE_ZONE_VALUE: int = 1
