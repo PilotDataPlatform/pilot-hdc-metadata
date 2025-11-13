@@ -4,7 +4,6 @@
 # Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter
@@ -142,7 +141,7 @@ class APIItems:
 @cbv(router_bulk)
 class APIItemsBulk:
     @router_bulk.get('/batch/', response_model=GETItemResponse, summary='Get many items by IDs')
-    async def get_items_by_ids(self, ids: List[UUID] = Query(None), params: GETItemsByIDs = Depends()) -> JSONResponse:
+    async def get_items_by_ids(self, ids: list[UUID] = Query(None), params: GETItemsByIDs = Depends()) -> JSONResponse:
         try:
             api_response = GETItemResponse()
             get_items_by_ids(params, ids, api_response)
@@ -175,16 +174,14 @@ class APIItemsBulk:
         except DuplicateRecordException:
             set_api_response_error(api_response, 'Item conflict in database', EAPIResponseCode.conflict)
         except Exception as e:
-            set_api_response_error(
-                api_response, 'Failed to create items: %s' % (str(e)), EAPIResponseCode.internal_error
-            )
+            set_api_response_error(api_response, f'Failed to create items: {e}', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router_bulk.put('/batch/', response_model=PUTItemResponse, summary='Update many items')
     async def update_items(
         self,
         data: PUTItems,
-        ids: List[UUID] = Query(None),
+        ids: list[UUID] = Query(None),
         kafka_client: KafkaProducerClient = Depends(get_kafka_client),
     ) -> JSONResponse:
         try:
@@ -195,14 +192,12 @@ class APIItemsBulk:
         except BadRequestException as e:
             set_api_response_error(api_response, str(e), EAPIResponseCode.bad_request)
         except Exception as e:
-            set_api_response_error(
-                api_response, 'Failed to update items: %s' % (str(e)), EAPIResponseCode.internal_error
-            )
+            set_api_response_error(api_response, f'Failed to update items: {e}', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
     @router_bulk.delete('/batch/', response_model=DELETEItemResponse, summary='Permanently delete many items by IDs')
     async def delete_items_by_ids(
-        self, ids: List[UUID] = Query(None), kafka_client: KafkaProducerClient = Depends(get_kafka_client)
+        self, ids: list[UUID] = Query(None), kafka_client: KafkaProducerClient = Depends(get_kafka_client)
     ) -> JSONResponse:
         try:
             api_response = DELETEItemResponse()

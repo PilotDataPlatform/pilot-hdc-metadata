@@ -20,7 +20,7 @@ class TransformationType(str, Enum):
     ARCHIVE = 'archive'
 
     def __str__(self):
-        return '%s' % self.name
+        return f'{self.name}'
 
 
 class GETLineageProvenance(BaseModel):

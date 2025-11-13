@@ -4,8 +4,6 @@
 # Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from typing import List
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -21,7 +19,7 @@ class GETTemplate(BaseModel):
 
 class GETTemplates(BaseModel):
     project_code: str
-    name: Optional[str]
+    name: str | None
     page_size: int = 10
     page: int = 0
 
@@ -54,7 +52,7 @@ class POSTTemplateAttributes(BaseModel):
     name: str
     optional: bool = True
     type: str = 'text'
-    options: Optional[list[str]]
+    options: list[str] | None
 
     @validator('type')
     def type_validation(cls, v):
@@ -66,7 +64,7 @@ class POSTTemplateAttributes(BaseModel):
 class POSTTemplate(BaseModel):
     name: str
     project_code: str
-    attributes: List[POSTTemplateAttributes]
+    attributes: list[POSTTemplateAttributes]
 
 
 class POSTTemplateResponse(GETTemplateResponse):

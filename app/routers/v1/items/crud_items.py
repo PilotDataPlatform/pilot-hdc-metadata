@@ -7,7 +7,6 @@
 import time
 import uuid
 from datetime import datetime
-from typing import Tuple
 from uuid import UUID
 
 from fastapi_sqlalchemy import db
@@ -168,7 +167,7 @@ def attributes_match_template(attributes: dict, template_id: UUID) -> bool:
         return False
 
 
-def get_item_by_id(item_id: UUID) -> Tuple[ItemModel, StorageModel, ExtendedModel]:
+def get_item_by_id(item_id: UUID) -> tuple[ItemModel, StorageModel, ExtendedModel]:
     item_query = (
         db.session.query(ItemModel, StorageModel, ExtendedModel)
         .join(StorageModel, ExtendedModel)
@@ -186,7 +185,11 @@ def get_item_by_location(params: GETItemsByLocation):
         .join(StorageModel, ExtendedModel)
         .filter(
             ItemModel.name == params.name,
-            ItemModel.parent_path == Ltree(encode_path_for_ltree(params.parent_path)),
+            (
+                ItemModel.parent_path == Ltree(encode_path_for_ltree(params.parent_path))
+                if params.parent_path is not None
+                else ItemModel.parent_path.is_(None)
+            ),
             ItemModel.container_code == params.container_code,
             ItemModel.container_type == params.container_type,
             ItemModel.zone == params.zone,

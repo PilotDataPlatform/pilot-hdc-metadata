@@ -4,15 +4,13 @@
 # Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from typing import Union
-
 from app.app_utils import construct_display_path
 from app.models.sql_collections import CollectionsModel
 from app.models.sql_favourites import FavouritesModel
 from app.models.sql_items import ItemModel
 
 
-def create_favourite_response(favourite: FavouritesModel, entity: Union[ItemModel, CollectionsModel]) -> dict:
+def create_favourite_response(favourite: FavouritesModel, entity: ItemModel | CollectionsModel) -> dict:
     return {
         'id': str(favourite.item_id) if type(entity) is ItemModel else str(favourite.collection_id),
         'type': entity.type if type(entity) is ItemModel else 'collection',

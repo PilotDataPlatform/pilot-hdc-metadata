@@ -4,7 +4,6 @@
 # Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from typing import List
 from uuid import UUID
 
 from fastapi_sqlalchemy import db
@@ -33,7 +32,7 @@ def get_templates_by_project_code(params: GETTemplates, api_response: APIRespons
     paginate(params, api_response, template_query, None)
 
 
-def format_attributes_for_json(attributes: POSTTemplateAttributes) -> List[dict]:
+def format_attributes_for_json(attributes: POSTTemplateAttributes) -> list[dict]:
     json_attributes = []
     for attribute in attributes:
         json_attributes.append(

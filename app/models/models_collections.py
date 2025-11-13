@@ -5,7 +5,6 @@
 # You may not use this file except in compliance with the License.
 
 import re
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -87,7 +86,7 @@ class GETCollectionItemsResponse(APIResponse):
 
 
 class POSTCollection(BaseModel):
-    id: Optional[UUID] = Field(example='3fa85f64-5717-4562-b3fc-2c963f66afa6')
+    id: UUID | None = Field(example='3fa85f64-5717-4562-b3fc-2c963f66afa6')
     owner: str
     container_code: str
     name: str
