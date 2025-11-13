@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "metadata"
-version = "2.2.5"
+version = "2.2.10"
 description = "Create and update file metadata"
 authors = ["Indoc Research"]
 
@@ -15,7 +15,7 @@ requests = "2.24.0"
 sqlalchemy-utils = "0.38.2"
 uvicorn = "0.17.5"
 python-json-logger = "2.0.2"
-fastavro = "1.6.0"
+fastavro = "1.10.0"
 kafka-python = "^2.0.2"
 pilot-platform-common = "0.3.0"
 

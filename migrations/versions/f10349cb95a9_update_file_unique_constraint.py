@@ -3,8 +3,7 @@
 # Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 # Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
-
-"""update file unique constraint.
+"""Update file unique constraint.
 
 Revision ID: f10349cb95a9
 Revises: fe53c1185f01

@@ -5,7 +5,6 @@
 # You may not use this file except in compliance with the License.
 
 from operator import or_
-from typing import List
 from uuid import UUID
 
 from fastapi_sqlalchemy import db
@@ -20,7 +19,7 @@ from app.models.sql_provenance import ProvenanceModel
 from app.routers.router_exceptions import EntityNotFoundException
 
 
-def get_lineage_by_item_id(item_id: UUID) -> List[LineageModel]:
+def get_lineage_by_item_id(item_id: UUID) -> list[LineageModel]:
     lineage_query = db.session.query(LineageModel).filter(
         or_(LineageModel.consumes.any(item_id), LineageModel.produces.any(item_id))
     )
@@ -33,7 +32,7 @@ def get_lineage_by_item_id(item_id: UUID) -> List[LineageModel]:
     return item_lineage
 
 
-def get_provenance_snapshots_by_item_id(item_id: UUID) -> List[ProvenanceModel]:
+def get_provenance_snapshots_by_item_id(item_id: UUID) -> list[ProvenanceModel]:
     provenance_query = (
         db.session.query(ProvenanceModel)
         .filter(ProvenanceModel.item_id == item_id)
@@ -73,7 +72,7 @@ def get_lineage_provenance_by_item_id(item_id: UUID) -> dict:
     return response
 
 
-def create_lineage(consumes: List[UUID], produces: List[UUID], tfrm_type: TransformationType) -> UUID:
+def create_lineage(consumes: list[UUID], produces: list[UUID], tfrm_type: TransformationType) -> UUID:
     lineage_model_data = {'consumes': consumes, 'produces': produces, 'tfrm_type': tfrm_type}
     lineage = LineageModel(**lineage_model_data)
     db.session.add(lineage)

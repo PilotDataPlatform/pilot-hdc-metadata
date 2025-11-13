@@ -3,8 +3,7 @@
 # Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 # Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
-
-"""empty message.
+"""Empty message.
 
 Revision ID: 0a475ee40d8a
 Revises: 5dfa86209d0f

@@ -6,7 +6,6 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -21,17 +20,19 @@ from .base_models import PaginationRequest
 
 
 class ItemStatus(str, Enum):
-    """The new enum type for file status
+    """The new enum type for file status.
+
     - REGISTERED means file is created by upload service but not complete yet. either in progress or fail.
     - ACTIVE means file uploading is complete.
-    - ARCHIVED means the file has been deleted."""
+    - ARCHIVED means the file has been deleted.
+    """
 
     REGISTERED = 'REGISTERED'
     ACTIVE = 'ACTIVE'
     ARCHIVED = 'ARCHIVED'
 
     def __str__(self):
-        return '%s' % self.name
+        return f'{self.name}'
 
 
 class ItemType(str, Enum):
@@ -40,7 +41,7 @@ class ItemType(str, Enum):
     NAME_FOLDER = 'name_folder'
 
     def __str__(self):
-        return '%s' % self.name
+        return f'{self.name}'
 
 
 class ContainerType(str, Enum):
@@ -48,7 +49,7 @@ class ContainerType(str, Enum):
     DATASET = 'dataset'
 
     def __str__(self):
-        return '%s' % self.name
+        return f'{self.name}'
 
 
 class GETItem(BaseModel):
@@ -57,7 +58,7 @@ class GETItem(BaseModel):
 
 class GETItemByLocation(BaseModel):
     name: str
-    parent_path: str
+    parent_path: str | None
     container_code: str
     container_type: ContainerType
     zone: int
@@ -70,21 +71,21 @@ class GETItemsByIDs(BaseModel):
 
 
 class GETItemsByLocation(PaginationRequest):
-    container_code: Optional[str]
-    zone: Optional[int]
+    container_code: str | None
+    zone: int | None
     recursive: bool = False
     status: ItemStatus = ItemStatus.ACTIVE
-    parent_path: Optional[str]
-    restore_path: Optional[str]
-    name: Optional[str]
-    owner: Optional[str]
-    type: Optional[str]
-    container_type: Optional[str]
-    auth_user: Optional[str]
-    project_role: Optional[str]
-    fav_user: Optional[str]
-    last_updated_start: Optional[datetime] = None
-    last_updated_end: Optional[datetime] = None
+    parent_path: str | None
+    restore_path: str | None
+    name: str | None
+    owner: str | None
+    type: str | None
+    container_type: str | None
+    auth_user: str | None
+    project_role: str | None
+    fav_user: str | None
+    last_updated_start: datetime | None = None
+    last_updated_end: datetime | None = None
 
     class Config:
         anystr_strip_whitespace = True
@@ -126,9 +127,9 @@ class GETItemResponse(APIResponse):
 
 
 class POSTItem(BaseModel):
-    id: Optional[UUID]
-    parent: Optional[UUID] = Field(example='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-    parent_path: Optional[str] = Field(example='path/to/file')
+    id: UUID | None
+    parent: UUID | None = Field(example='3fa85f64-5717-4562-b3fc-2c963f66afa6')
+    parent_path: str | None = Field(example='path/to/file')
     container_code: str
     container_type: str = 'project'
     type: str = 'file'
@@ -137,15 +138,15 @@ class POSTItem(BaseModel):
     name: str = Field(example='file_name.txt')
     size: int = 0
     owner: str
-    upload_id: Optional[str]
-    location_uri: Optional[str]
-    version: Optional[str]
+    upload_id: str | None
+    location_uri: str | None
+    version: str | None
     tags: list[str] = []
     system_tags: list[str] = []
-    attribute_template_id: Optional[UUID]
-    attributes: Optional[dict] = {}
-    tfrm_source: Optional[UUID] = None
-    tfrm_type: Optional[TransformationType] = None
+    attribute_template_id: UUID | None
+    attributes: dict | None = {}
+    tfrm_source: UUID | None = None
+    tfrm_type: TransformationType | None = None
 
     class Config:
         anystr_strip_whitespace = True
@@ -237,22 +238,22 @@ class POSTItemResponse(GETItemResponse):
 
 
 class PUTItem(POSTItem):
-    parent: Optional[UUID] = Field(example='3fa85f64-5717-4562-b3fc-2c963f66afa6', default='')
-    parent_path: Optional[str] = Field(example='path/to/file', default='')
-    type: Optional[str]
-    status: Optional[ItemStatus]
-    zone: Optional[int]
-    name: Optional[str] = Field(example='file_name.txt')
-    size: Optional[int]
-    owner: Optional[str]
-    container_code: Optional[str]
-    container_type: Optional[str]
-    location_uri: Optional[str]
-    version: Optional[str]
-    tags: Optional[list[str]]
-    system_tags: Optional[list[str]]
-    attribute_template_id: Optional[UUID]
-    attributes: Optional[dict]
+    parent: UUID | None = Field(example='3fa85f64-5717-4562-b3fc-2c963f66afa6', default='')
+    parent_path: str | None = Field(example='path/to/file', default='')
+    type: str | None
+    status: ItemStatus | None
+    zone: int | None
+    name: str | None = Field(example='file_name.txt')
+    size: int | None
+    owner: str | None
+    container_code: str | None
+    container_type: str | None
+    location_uri: str | None
+    version: str | None
+    tags: list[str] | None
+    system_tags: list[str] | None
+    attribute_template_id: UUID | None
+    attributes: dict | None
 
     class Config:
         anystr_strip_whitespace = True
@@ -275,9 +276,9 @@ class DELETEItemResponse(APIResponse):
 
 
 class PUTItemsBequeath(BaseModel):
-    attribute_template_id: Optional[UUID]
-    attributes: Optional[dict]
-    system_tags: Optional[list[str]]
+    attribute_template_id: UUID | None
+    attributes: dict | None
+    system_tags: list[str] | None
 
 
 class PUTItemsBequeathResponse(GETItemResponse):
