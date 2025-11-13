@@ -13,7 +13,7 @@ from pydantic import Extra
 
 
 class Settings(BaseSettings):
-    version = '2.2.0'
+    version = '2.2.10'
     APP_NAME: str = 'metadata_service'
     PORT: int = 5065
     HOST: str = '0.0.0.0'
