@@ -48,6 +48,7 @@ from .crud_items import get_item_by_id
 from .crud_items import get_item_by_location
 from .crud_items import get_items_by_ids
 from .crud_items import get_items_by_location
+from .crud_items import mark_delete_item_by_id
 from .crud_items import update_item
 from .crud_items import update_items
 from .dependencies import jwt_required
@@ -135,6 +136,33 @@ class APIItems:
             set_api_response_error(api_response, f'Failed to get item with id {params.id}', EAPIResponseCode.not_found)
         except Exception:
             set_api_response_error(api_response, 'Failed to delete item', EAPIResponseCode.internal_error)
+        return api_response.json_response()
+
+    @router.delete('/mark/')
+    async def mark_item_deleted(
+        self, id_: UUID = Query(None, alias='id'), current_identity: dict = Depends(jwt_required)
+    ) -> JSONResponse:
+        try:
+            api_response = DELETEItemResponse()
+            mark_delete_item_by_id(id_, current_identity['username'])
+        except EntityNotFoundException:
+            set_api_response_error(api_response, f'Failed to get item with id {id_}', EAPIResponseCode.not_found)
+        except Exception:
+            set_api_response_error(api_response, 'Failed to mark item as deleted', EAPIResponseCode.internal_error)
+        return api_response.json_response()
+
+    @router.delete('batch/mark/')
+    async def mark_items_deleted(
+        self, ids: list[UUID] = Query(None), current_identity: dict = Depends(jwt_required)
+    ) -> JSONResponse:
+        try:
+            api_response = DELETEItemResponse()
+            for id_ in ids:
+                mark_delete_item_by_id(id_, current_identity['username'])
+        except EntityNotFoundException:
+            set_api_response_error(api_response, 'One or more items not found', EAPIResponseCode.not_found)
+        except Exception:
+            set_api_response_error(api_response, 'Failed to mark items as deleted', EAPIResponseCode.internal_error)
         return api_response.json_response()
 
 

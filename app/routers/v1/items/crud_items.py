@@ -599,6 +599,17 @@ def delete_item_by_id(id_: UUID, kafka_client: KafkaProducerClient, api_response
     api_response.total = 0
 
 
+def mark_delete_item_by_id(id_: UUID, username: str):
+    item_query = db.session.query(ItemModel).filter(ItemModel.id == id_)
+    item_result = item_query.first()
+    if not item_result:
+        raise EntityNotFoundException()
+    item_result.deleted = True
+    item_result.deleted_by = username
+    item_result.deleted_at = datetime.utcnow()
+    db.session.commit()
+
+
 def delete_items_by_ids(ids: list[UUID], kafka_client: KafkaProducerClient, api_response: APIResponse):
     for id_ in ids:
         delete_item_by_id(id_, kafka_client, api_response)
