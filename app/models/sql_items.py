@@ -7,6 +7,7 @@
 from datetime import datetime
 
 from sqlalchemy import BIGINT
+from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
@@ -38,6 +39,9 @@ class ItemModel(Base):
     owner = Column(String())
     container_code = Column(String(), nullable=False)
     container_type = Column(Enum('project', 'dataset', name='container_enum', create_type=False), nullable=False)
+    deleted = Column(Boolean(), default=False, nullable=False)
+    deleted_by = Column(String())
+    deleted_at = Column(DateTime(), default=None)
     created_time = Column(DateTime(), default=datetime.utcnow, nullable=False)
     last_updated_time = Column(DateTime(), default=datetime.utcnow, nullable=False)
 
@@ -83,6 +87,7 @@ class ItemModel(Base):
             'owner': self.owner,
             'container_code': self.container_code,
             'container_type': self.container_type,
-            'created_time': str(self.created_time),
+            'deleted': self.deleted,
+            '' 'created_time': str(self.created_time),
             'last_updated_time': str(self.last_updated_time),
         }

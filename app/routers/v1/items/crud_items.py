@@ -231,9 +231,9 @@ async def get_items_by_location(  # noqa: C901
         item_query = db.session.query(ItemModel, StorageModel, ExtendedModel, FavouritesModel).outerjoin(
             StorageModel, ExtendedModel, FavouritesModel
         )
-    item_query = item_query.filter(
-        ItemModel.status == params.status,
-    ).order_by(ItemModel.type, custom_sort)
+    item_query = item_query.filter(ItemModel.status == params.status, ItemModel.deleted.is_(False)).order_by(
+        ItemModel.type, custom_sort
+    )
 
     if params.container_code:
         item_query = item_query.filter(ItemModel.container_code == params.container_code)
