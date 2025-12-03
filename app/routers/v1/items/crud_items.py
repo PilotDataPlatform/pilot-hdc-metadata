@@ -212,6 +212,15 @@ def get_items_by_ids(params: GETItemsByIDs, ids: list[UUID], api_response: APIRe
     paginate(params, api_response, item_query, combine_item_tables)
 
 
+def get_marked_items_by_username(deleted_by: str) -> list[tuple[ItemModel, StorageModel, ExtendedModel]]:
+    item_query = (
+        db.session.query(ItemModel, StorageModel, ExtendedModel)
+        .join(StorageModel, ExtendedModel)
+        .filter(ItemModel.deleted_by == deleted_by, ItemModel.deleted.is_(True))
+    )
+    return item_query.all()
+
+
 async def get_items_by_location(  # noqa: C901
     params: GETItemsByLocation, api_response: APIResponse, current_identity: dict
 ):
@@ -607,6 +616,17 @@ def mark_delete_item_by_id(id_: UUID, username: str):
     item_result.deleted = True
     item_result.deleted_by = username
     item_result.deleted_at = datetime.utcnow()
+    db.session.commit()
+
+
+def mark_restore_item_by_id(id_: UUID):
+    item_query = db.session.query(ItemModel).filter(ItemModel.id == id_)
+    item_result = item_query.first()
+    if not item_result:
+        raise EntityNotFoundException()
+    item_result.deleted = False
+    item_result.deleted_by = None
+    item_result.deleted_at = None
     db.session.commit()
 
 
