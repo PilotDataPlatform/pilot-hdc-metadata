@@ -35,7 +35,7 @@ def upgrade():
         'items',
         sa.Column(
             'deleted_by',
-            sa.Boolean(),
+            sa.String(),
             nullable=True,
             server_default=sa.sql.null(),
         ),
