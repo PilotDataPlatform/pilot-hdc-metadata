@@ -88,6 +88,7 @@ class ItemModel(Base):
             'container_code': self.container_code,
             'container_type': self.container_type,
             'deleted': self.deleted,
+            'deleted_time': str(self.deleted_at) if self.deleted_at else None,
             '' 'created_time': str(self.created_time),
             'last_updated_time': str(self.last_updated_time),
         }
