@@ -7,6 +7,8 @@
 import time
 import uuid
 from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from uuid import UUID
 
 from fastapi_sqlalchemy import db
@@ -216,7 +218,11 @@ def get_marked_items_by_username(deleted_by: str) -> list[tuple[ItemModel, Stora
     item_query = (
         db.session.query(ItemModel, StorageModel, ExtendedModel)
         .join(StorageModel, ExtendedModel)
-        .filter(ItemModel.deleted_by == deleted_by, ItemModel.deleted.is_(True))
+        .filter(
+            ItemModel.deleted_by == deleted_by,
+            ItemModel.deleted.is_(True),
+            ItemModel.deleted_at >= datetime.now(timezone.utc) - timedelta(days=30),
+        )
     )
     return item_query.all()
 
