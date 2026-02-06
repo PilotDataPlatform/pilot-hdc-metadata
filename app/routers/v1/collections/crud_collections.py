@@ -6,6 +6,7 @@
 
 import json
 from datetime import datetime
+from datetime import timezone
 from operator import or_
 from uuid import UUID
 
@@ -151,7 +152,7 @@ def update_collection(data: PUTCollections, api_response: APIResponse):
                 name=collection.name,
                 container_code=data.container_code,
                 owner=data.owner,
-                last_updated_time=datetime.utcnow(),
+                last_updated_time=datetime.now(timezone.utc),
             )
         )
         db.session.commit()

@@ -9,6 +9,7 @@ import re
 import string
 import uuid
 from datetime import datetime
+from datetime import timezone
 
 import pytest
 from alembic.command import upgrade
@@ -66,7 +67,7 @@ def test_items(app) -> dict:
         'container_code': 'test_project',
         'container_code_dataset': 'test_dataset',
         'zone': 0,
-        'datetime': datetime.utcnow(),
+        'datetime': datetime.now(timezone.utc),
         'ids': {
             'name_folder': str(uuid.uuid4()),
             'folder': str(uuid.uuid4()),
@@ -215,7 +216,7 @@ def test_items(app) -> dict:
 
     props_registered = {
         'zone': 0,
-        'datetime': datetime.utcnow(),
+        'datetime': datetime.now(timezone.utc),
         'ids': {
             'file_4': str(uuid.uuid4()),
         },

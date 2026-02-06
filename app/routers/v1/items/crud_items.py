@@ -422,7 +422,7 @@ def update_item(item_id: UUID, data: PUTItem, kafka_client: KafkaProducerClient)
         item.container_code = data.container_code
     if data.container_type:
         item.container_type = data.container_type
-    item.last_updated_time = datetime.utcnow()
+    item.last_updated_time = datetime.now(timezone.utc)
     storage = db.session.query(StorageModel).filter_by(item_id=item_id).first()
     if data.location_uri:
         storage.location_uri = data.location_uri
@@ -525,7 +525,7 @@ def archive_item(item: ItemModel, trash_item: ItemStatus, root_item: ItemModel =
             item.parent_path = item.restore_path
             item.restore_path = None
         item.status = trash_item
-        item.last_updated_time = datetime.utcnow()
+        item.last_updated_time = datetime.now(timezone.utc)
         lineage_id = create_lineage(consumes=[item.id], produces=None, tfrm_type=TransformationType.ARCHIVE)
         create_provenance(
             lineage_id=lineage_id,
@@ -621,7 +621,7 @@ def mark_delete_item_by_id(id_: UUID, username: str):
         raise EntityNotFoundException()
     item_result.deleted = True
     item_result.deleted_by = username
-    item_result.deleted_at = datetime.utcnow()
+    item_result.deleted_at = datetime.now(timezone.utc)
     db.session.commit()
 
 
