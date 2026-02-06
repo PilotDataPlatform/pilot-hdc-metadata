@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     CORE_ZONE_VALUE: int = 1
     RSA_PUBLIC_KEY = ''
 
+    DELETED_ITEMS_RETENTION_DAYS: int = 30
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

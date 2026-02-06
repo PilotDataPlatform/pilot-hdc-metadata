@@ -20,6 +20,7 @@ from app.app_utils import decode_path_from_ltree
 from app.app_utils import encode_label_for_ltree
 from app.app_utils import encode_path_for_ltree
 from app.clients.kafka_client import KafkaProducerClient
+from app.config import ConfigClass
 from app.models.base_models import APIResponse
 from app.models.models_items import GETItemsByIDs
 from app.models.models_items import GETItemsByLocation
@@ -215,13 +216,14 @@ def get_items_by_ids(params: GETItemsByIDs, ids: list[UUID], api_response: APIRe
 
 
 def get_marked_items_by_username(deleted_by: str) -> list[tuple[ItemModel, StorageModel, ExtendedModel]]:
+    days_ago = ConfigClass.DELETED_ITEMS_RETENTION_DAYS
     item_query = (
         db.session.query(ItemModel, StorageModel, ExtendedModel)
         .join(StorageModel, ExtendedModel)
         .filter(
             ItemModel.deleted_by == deleted_by,
             ItemModel.deleted.is_(True),
-            ItemModel.deleted_at >= datetime.now(timezone.utc) - timedelta(days=30),
+            ItemModel.deleted_at >= datetime.now(timezone.utc) - timedelta(days=days_ago),
         )
     )
     return item_query.all()
