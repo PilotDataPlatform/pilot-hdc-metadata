@@ -6,6 +6,7 @@
 
 import uuid
 from datetime import datetime
+from datetime import timezone
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime
@@ -33,7 +34,7 @@ class CollectionsModel(Base):
         self.name = name
         self.container_code = container_code
         self.owner = owner
-        self.last_updated_time = last_updated_time if last_updated_time else datetime.utcnow()
+        self.last_updated_time = last_updated_time if last_updated_time else datetime.now(timezone.utc)
 
     def to_dict(self):
         return {

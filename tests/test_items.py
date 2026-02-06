@@ -6,6 +6,7 @@
 
 import uuid
 from datetime import datetime
+from datetime import timezone
 
 import pytest
 
@@ -281,7 +282,7 @@ class TestItems:
     ):
         params = {
             'last_updated_start': test_items['datetime'],
-            'last_updated_end': datetime.utcnow(),
+            'last_updated_end': datetime.now(timezone.utc),
             'recursive': True,
             'container_code': 'test_project',
         }
@@ -290,7 +291,7 @@ class TestItems:
 
         params = {
             'last_updated_start': test_items['datetime'],
-            'last_updated_end': datetime.utcnow(),
+            'last_updated_end': datetime.now(timezone.utc),
             'status': ItemStatus.REGISTERED,
             'recursive': True,
             'container_code': 'test_project',
