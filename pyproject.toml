@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "metadata"
-version = "2.2.15"
+version = "2.2.16"
 description = "Create and update file metadata"
 authors = ["Indoc Research"]
 
